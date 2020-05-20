@@ -101,6 +101,16 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
+func TestSumProduct(t *testing.T) {
+	clearTable()
+	addProducts(2)
+
+	req, _ := http.NewRequest("GET", "/product/sum/1p2", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
 func TestGetProduct(t *testing.T) {
 	clearTable()
 	addProducts(1)

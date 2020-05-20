@@ -10,6 +10,10 @@ type product struct {
 	Price float64 `json:"price"`
 }
 
+func (p *product) addProductWithProduct(p2 product, db *sql.DB) error {
+	return db.QueryRow("SELECT SUM (price) FROM products WHERE id=$1 OR id=$2", p.ID, p2.ID).Scan(&p.Price)
+}
+
 func (p *product) getProduct(db *sql.DB) error {
 	return db.QueryRow("SELECT name, price FROM products WHERE id=$1", p.ID).Scan(&p.Name, &p.Price)
 }

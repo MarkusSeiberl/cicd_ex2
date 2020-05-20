@@ -37,10 +37,37 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
+	a.Router.HandleFunc("/product/sum/{id1:[0-9]+}p{id2:[0-9]+}", a.sumProducts).Methods("GET")
 }
 
 func (a *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(":8010", a.Router))
+}
+
+func (a *App) sumProducts(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id1, err1 := strconv.Atoi(vars["id1"])
+	id2, err2 := strconv.Atoi(vars["id2"])
+	if err1 != nil || err2 != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
+		return
+	}
+
+	p := product{ID: id1}
+	p2 := product{ID: id2}
+
+	if err := p.addProductWithProduct(p2, a.DB); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			respondWithError(w, http.StatusNotFound, "Product not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, p.Price)
 }
 
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
