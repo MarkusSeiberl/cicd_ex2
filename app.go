@@ -38,6 +38,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
 	a.Router.HandleFunc("/product/sum/{id1:[0-9]+}p{id2:[0-9]+}", a.sumProducts).Methods("GET")
+	a.Router.HandleFunc("/product/withLimit/{price:[0-9]+}", a.getProductsWithLimit).Methods("GET")
 }
 
 func (a *App) Run(addr string) {
@@ -102,6 +103,23 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func (a *App) getProductsWithLimit(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	price, err := strconv.Atoi(vars["price"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid price")
+		return
+	}
+
+	products, err := getProductsWithLimit(price, a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, products)
 }
 
 func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {

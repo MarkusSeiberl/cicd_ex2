@@ -111,6 +111,16 @@ func TestSumProduct(t *testing.T) {
 	checkResponseCode(t, http.StatusOK, response.Code)
 }
 
+func TestGetProductsWithLimit(t *testing.T) {
+	clearTable()
+	addProducts(6)
+
+	req, _ := http.NewRequest("GET", "/product/withLimit/40", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
 func TestGetProduct(t *testing.T) {
 	clearTable()
 	addProducts(1)
