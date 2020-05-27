@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	a.Initialize(
 		"postgres",
 		"postgres",
-		"products")
+		"postgres")
 
 	ensureTableExists()
 	code := m.Run()

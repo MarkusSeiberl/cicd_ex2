@@ -9,7 +9,7 @@ func main() {
 	a.Initialize(
 		"postgres",
 		"postgres",
-		"products")
+		"postgres")
 
 	a.Run(":8010")
 }
